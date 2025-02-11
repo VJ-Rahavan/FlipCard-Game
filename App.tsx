@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, SetStateAction, Dispatch} from 'react';
 import {
   StyleSheet,
   View,
@@ -15,7 +15,11 @@ import Animated, {
 
 import ConfettiCannon from 'react-native-confetti-cannon';
 
-const MyComponent = ({setShowConfetti}) => (
+const MyComponent = ({
+  setShowConfetti,
+}: {
+  setShowConfetti: Dispatch<SetStateAction<boolean>>;
+}) => (
   <ConfettiCannon
     count={200}
     origin={{x: -10, y: 0}}
@@ -25,7 +29,13 @@ const MyComponent = ({setShowConfetti}) => (
   />
 );
 
-const cardImages = [
+type CardTypes = {
+  src: string;
+  matched: boolean;
+  id?: number;
+};
+
+const cardImages: CardTypes[] = [
   {
     src: 'https://wallpapers.com/images/high/goku-pictures-b3hqvmgii144uzdq.webp',
     matched: false,
@@ -53,15 +63,15 @@ const cardImages = [
 ];
 
 const FlipCardGame = () => {
-  const [cards, setCards] = useState([]);
-  const [firstChoice, setFirstChoice] = useState(null);
-  const [secondChoice, setSecondChoice] = useState(null);
+  const [cards, setCards] = useState<CardTypes[]>([]);
+  const [firstChoice, setFirstChoice] = useState<CardTypes | null>(null);
+  const [secondChoice, setSecondChoice] = useState<CardTypes | null>(null);
   const [disabled, setDisabled] = useState(false);
   const [moves, setMoves] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
 
   const shuffleCards = () => {
-    const shuffledCards = [...cardImages, ...cardImages]
+    const shuffledCards: CardTypes[] = [...cardImages, ...cardImages]
       .sort(() => Math.random() - 0.5)
       .map(card => ({...card, id: Math.random()}));
     setCards(shuffledCards);
@@ -75,7 +85,7 @@ const FlipCardGame = () => {
     shuffleCards();
   }, []);
 
-  const handleChoice = card => {
+  const handleChoice = (card: CardTypes) => {
     firstChoice ? setSecondChoice(card) : setFirstChoice(card);
   };
 
@@ -97,11 +107,10 @@ const FlipCardGame = () => {
   const {height, width} = useWindowDimensions();
 
   useEffect(() => {
-    // Check if all cards are matched
     if (cards.length > 0 && cards.every(card => card?.matched)) {
       resetChoices();
       shuffleCards();
-      setShowConfetti(true); // Show confetti when all cards are matched
+      setShowConfetti(true);
     }
   }, [cards]);
 
@@ -148,7 +157,14 @@ const FlipCardGame = () => {
   );
 };
 
-const Card = ({card, handleChoice, flipped, disabled}) => {
+interface ICard {
+  card: CardTypes;
+  handleChoice: (param: CardTypes) => void;
+  flipped: boolean;
+  disabled: boolean;
+}
+
+const Card = ({card, handleChoice, flipped, disabled}: ICard) => {
   const flipAnimation = useSharedValue(0);
 
   useEffect(() => {
@@ -209,7 +225,6 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     margin: 5,
-    perspective: 1000,
   },
   cardFace: {
     position: 'absolute',
