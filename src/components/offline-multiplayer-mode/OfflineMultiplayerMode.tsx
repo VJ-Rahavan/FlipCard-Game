@@ -9,8 +9,8 @@ import {
 } from 'react-native';
 
 import ConfettiCannon from 'react-native-confetti-cannon';
-import {CardTypes} from '../../types/Generic';
-import Card from '../card/Card';
+import {CardTypes} from 'types/Generic';
+import Card from 'components/card/Card';
 
 const MyComponent = ({
   setShowConfetti,
@@ -109,26 +109,42 @@ const OfflineMultiplayerMode = () => {
   const [moves, setMoves] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
   const [highScore, setHighScore] = useState<number>(Infinity);
-  const [isNewHighScore, setIsNewHighScore] = useState<boolean>(false);
   const [playersDetails, setPlayersDetails] = useState([
     {id: 23, name: 'Vijay', moves: 0, current: true, score: 0},
     {id: 17, name: 'Kakarot', moves: 0, current: false, score: 0},
   ]);
 
-  const shuffleCards = () => {
+  const resetPlayersScore = () => {
+    setPlayersDetails(prev => {
+      const data = prev.map((data, index) => {
+        return {...data, moves: 0, current: index === 0, score: 0};
+      });
+
+      return data;
+    });
+  };
+
+  const shuffleCards = async (isFirstTime?: boolean) => {
+    setFirstChoice(null);
+    setSecondChoice(null);
     const shuffledCards: CardTypes[] = [...cardImages].sort(
       () => Math.random() - 0.5,
     );
 
-    setCards(shuffledCards);
-    setFirstChoice(null);
-    setSecondChoice(null);
     setMoves(0);
     setShowConfetti(false);
+    if (isFirstTime) {
+      setCards(shuffledCards);
+      resetPlayersScore();
+    } else
+      setTimeout(() => {
+        setCards(shuffledCards);
+        resetPlayersScore();
+      }, 1000);
   };
 
   useEffect(() => {
-    shuffleCards();
+    shuffleCards(true);
   }, []);
 
   const handleChoice = (card: CardTypes) => {
@@ -146,9 +162,7 @@ const OfflineMultiplayerMode = () => {
           ),
         );
         resetChoices();
-        setTimeout(() => {
-          trackScore(true);
-        }, 300);
+        trackScore(true);
       } else {
         setTimeout(() => {
           trackScore(false);
@@ -251,7 +265,11 @@ const OfflineMultiplayerMode = () => {
           />
         ))}
       </View>
-      <TouchableOpacity style={styles.button} onPress={shuffleCards}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          shuffleCards();
+        }}>
         <Text style={styles.buttonText}>New Game</Text>
       </TouchableOpacity>
       <View
@@ -270,7 +288,10 @@ const OfflineMultiplayerMode = () => {
               style={{
                 width: 100,
                 height: 120,
-                backgroundColor: data.current ? '#0F0' : '#F0F',
+                backgroundColor: '#F0F',
+                borderWidth: 5,
+                borderColor: data.current ? '#32CD32' : 'transparent',
+                borderRadius: 10,
               }}>
               <View
                 style={{
@@ -280,6 +301,7 @@ const OfflineMultiplayerMode = () => {
                   justifyContent: 'center',
                   alignItems: 'center',
                   alignSelf: 'center',
+                  borderRadius: 8,
                   marginTop: 5,
                 }}>
                 <Text>{data.name}</Text>

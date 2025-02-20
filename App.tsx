@@ -1,7 +1,12 @@
-import OfflineMultiplayerMode from './src/components/offline-multiplayer-mode/OfflineMultiplayerMode';
+import {NavigationContainer} from '@react-navigation/native';
+import RootScreen from 'screens/RootScreen/RootScreen';
 
 const App = () => {
-  return <OfflineMultiplayerMode />;
+  return (
+    <NavigationContainer>
+      <RootScreen />
+    </NavigationContainer>
+  );
 };
 
 export default App;

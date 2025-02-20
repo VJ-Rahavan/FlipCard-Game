@@ -5,7 +5,7 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
-import {ICard} from '../../types/Generic';
+import {ICard} from 'types/Generic';
 
 const Card = ({card, handleChoice, flipped, disabled}: ICard) => {
   const flipAnimation = useSharedValue(0);
