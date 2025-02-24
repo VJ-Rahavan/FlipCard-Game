@@ -249,8 +249,11 @@ const Card = ({card, handleChoice, flipped, disabled}: ICard) => {
   };
 
   return (
-    <TouchableOpacity style={styles.card} onPress={handlePress}>
-      <Animated.View style={[styles.cardFace, frontStyle]}>
+    <TouchableOpacity
+      testID={'flipcard'}
+      style={styles.card}
+      onPress={handlePress}>
+      <Animated.View testID={'test-flip'} style={[styles.cardFace, frontStyle]}>
         <Text>Hello</Text>
       </Animated.View>
       <Animated.View style={[styles.cardFace, styles.cardBack, backStyle]}>
@@ -320,5 +323,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+export {styles};
 
 export default FlipCardGame;
