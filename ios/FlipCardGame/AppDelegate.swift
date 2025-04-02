@@ -2,6 +2,7 @@ import UIKit
 import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
+import Firebase
 
 @main
 class AppDelegate: RCTAppDelegate {
@@ -11,6 +12,7 @@ class AppDelegate: RCTAppDelegate {
 
     // You can add your custom initial props in the dictionary below.
     // They will be passed down to the ViewController used by React Native.
+    FirebaseApp.configure()
     self.initialProps = [:]
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
