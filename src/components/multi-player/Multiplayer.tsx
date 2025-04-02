@@ -23,6 +23,15 @@ const copyObj = (obj: any): any => {
 };
 const database = firebase.app().database();
 
+const setFirebaseData = async (path: string, data: any) => {
+  try {
+    await database.ref(path).set(data);
+    console.log(`Data set at ${path}`);
+  } catch (error) {
+    console.error(`Error setting data at ${path}:`, error);
+  }
+};
+
 const MyComponent = ({
   setShowConfetti,
 }: {
@@ -136,8 +145,6 @@ const MultiplayerMode = () => {
   };
 
   const shuffleCards = async (isFirstTime?: boolean) => {
-    // database.ref('players').set(playersDetails);
-
     setFirstChoice(null);
     setSecondChoice(null);
     const shuffledCards: CardTypes[] = [...cardImages].sort(
@@ -163,25 +170,32 @@ const MultiplayerMode = () => {
   const handleChoice = (card: CardTypes) => {
     if (firstChoice?.uniqueId !== card.uniqueId)
       if (firstChoice) {
-        database
-          .ref('/cards')
-          .set({
-            secondChoice: card,
-            firstChoice: firstChoice,
-          })
-          .then(() => console.log('Data set.'))
-          .catch(error => console.log(error));
-
+        // database
+        //   .ref('/cards')
+        //   .set({
+        //     secondChoice: card,
+        //     firstChoice: firstChoice,
+        //   })
+        //   .then(() => console.log('Data set.'))
+        //   .catch(error => console.log(error));
+        setFirebaseData('/cards', {
+          secondChoice: card,
+          firstChoice: firstChoice,
+        });
         setSecondChoice(card);
       } else {
-        database
-          .ref('/cards')
-          .set({
-            secondChoice: {},
-            firstChoice: card,
-          })
-          .then(() => console.log('Data set.'))
-          .catch(error => console.log(error));
+        setFirebaseData('/cards', {
+          secondChoice: {},
+          firstChoice: card,
+        });
+        // database
+        //   .ref('/cards')
+        //   .set({
+        //     secondChoice: {},
+        //     firstChoice: card,
+        //   })
+        //   .then(() => console.log('Data set.'))
+        //   .catch(error => console.log(error));
         setFirstChoice(card);
       }
   };
@@ -245,14 +259,18 @@ const MultiplayerMode = () => {
     setSecondChoice(null);
     setMoves(prevMoves => prevMoves + 1);
     setDisabled(false);
-    database
-      .ref('/cards')
-      .set({
-        secondChoice: {},
-        firstChoice: {},
-      })
-      .then(() => console.log('Data set.'))
-      .catch(error => console.log(error));
+    setFirebaseData('/cards', {
+      secondChoice: {},
+      firstChoice: {},
+    });
+    // database
+    //   .ref('/cards')
+    //   .set({
+    //     secondChoice: {},
+    //     firstChoice: {},
+    //   })
+    //   .then(() => console.log('Data set.'))
+    //   .catch(error => console.log(error));
   };
 
   const trackScore = (isMatched: boolean) => {
@@ -275,13 +293,17 @@ const MultiplayerMode = () => {
           }
         }
 
-        database
-          .ref('/users/123')
-          .set({
-            userData: temp,
-          })
-          .then(() => console.log('Data set.'))
-          .catch(error => console.log(error));
+        setFirebaseData('/users/123', {
+          userData: temp,
+        });
+
+        // database
+        //   .ref('/users/123')
+        //   .set({
+        //     userData: temp,
+        //   })
+        //   .then(() => console.log('Data set.'))
+        //   .catch(error => console.log(error));
 
         return temp;
       });
